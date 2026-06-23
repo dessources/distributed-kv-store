@@ -56,3 +56,5 @@ nunit-*.xml
 #LLMS
 Gemini.md
 Claude.md
+Gemini-tactician.md
+PROMPTS.md
