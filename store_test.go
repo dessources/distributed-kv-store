@@ -3,7 +3,12 @@ package main
 import "testing"
 
 func BenchmarkStore_Set(b *testing.B) {
-	store := NewStore(64)
+	wal, err := NewWal(Wal_path)
+	if err != nil {
+		println(err)
+		return
+	}
+	store := NewStore(64, wal)
 	key := "benchmark-key"
 	val := []byte("benchmark-value")
 
@@ -16,7 +21,12 @@ func BenchmarkStore_Set(b *testing.B) {
 }
 
 func BenchmarkStore_Delete(b *testing.B) {
-	store := NewStore(64)
+	wal, err := NewWal(Wal_path)
+	if err != nil {
+		println(err)
+		return
+	}
+	store := NewStore(64, wal)
 	key := "benchmark-key"
 	val := []byte("benchmark-value")
 
@@ -30,7 +40,12 @@ func BenchmarkStore_Delete(b *testing.B) {
 }
 
 func BenchmarkStore_Get(b *testing.B) {
-	store := NewStore(64)
+	wal, err := NewWal(Wal_path)
+	if err != nil {
+		println(err)
+		return
+	}
+	store := NewStore(64, wal)
 	key := "benchmark-key"
 	val := []byte("benchmark-value")
 

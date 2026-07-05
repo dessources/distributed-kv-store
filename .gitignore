@@ -59,3 +59,7 @@ Gemini.md
 Claude.md
 Gemini-tactician.md
 PROMPTS.md
+
+
+#log files
+*.wal

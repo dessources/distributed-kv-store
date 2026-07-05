@@ -13,6 +13,7 @@ const (
 	OpSet    byte = 1
 	OpDelete byte = 2
 	buf_size      = 5
+	Wal_path      = "/home/pianodessources/Projects/distributed-kv-store/log.wal"
 )
 
 type walRequest struct {
