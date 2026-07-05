@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package replication;
+
+option go_package = "./pb";
+
+service Replication {
+    rpc Sync(SyncRequest) returns (stream WalChunk);
+}
+
+message SyncRequest {
+    int64 starting_offset = 1;
+}
+
+message WalChunk {
+    bytes data = 1; 
+}

@@ -118,7 +118,20 @@ func (w *WAL) Recover(s *Store) error {
 		return err
 	}
 
-	reader := bufio.NewReader(w.f)
+	err = RecoverFromReader(w.f, s)
+
+	// Seek back to end for future local appends
+	_, seekErr := w.f.Seek(0, io.SeekEnd)
+	if err == nil {
+		return seekErr
+	}
+	return err
+}
+
+// RecoverFromReader allows both the local WAL and the gRPC Network Pipe to share
+// the exact same high-performance binary parsing logic.
+func RecoverFromReader(r io.Reader, s *Store) error {
+	reader := bufio.NewReader(r)
 
 	len16 := make([]byte, 2)
 	len32 := make([]byte, 4)
@@ -141,11 +154,11 @@ func (w *WAL) Recover(s *Store) error {
 		}
 		keyLen := binary.LittleEndian.Uint16(len16)
 
-		// read teh key
+		// read the key
 		keyBuf := make([]byte, keyLen)
 		if _, err := io.ReadFull(reader, keyBuf); err != nil {
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
-				break // corrupted tail end; stop recovering
+				break
 			}
 			return err
 		}
@@ -154,13 +167,13 @@ func (w *WAL) Recover(s *Store) error {
 		// read value length
 		if _, err := io.ReadFull(reader, len32); err != nil {
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
-				break // corrupted tail end; stop recovering
+				break
 			}
 			return err
 		}
 		valLen := binary.LittleEndian.Uint32(len32)
 
-		//  read the value
+		// read the value
 		valBuf := make([]byte, valLen)
 		if _, err := io.ReadFull(reader, valBuf); err != nil {
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
@@ -168,7 +181,6 @@ func (w *WAL) Recover(s *Store) error {
 			}
 			return err
 		}
-		//load into the shard thingy
 
 		switch op {
 		case OpSet:
@@ -176,10 +188,7 @@ func (w *WAL) Recover(s *Store) error {
 		case OpDelete:
 			s.Delete(key)
 		}
-
 	}
 
-	_, err = w.f.Seek(0, io.SeekEnd)
-	return err
-
+	return nil
 }
