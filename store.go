@@ -20,9 +20,10 @@ type shard struct {
 
 type Store struct {
 	shards []shard
+	wal    *WAL
 }
 
-func NewStore(shard_count int) *Store {
+func NewStore(shard_count int, wal *WAL) *Store {
 
 	shard_count = nextPowerOfTwo(shard_count)
 
@@ -34,6 +35,7 @@ func NewStore(shard_count int) *Store {
 
 	return &Store{
 		shards: shards,
+		wal:    wal,
 	}
 }
 
@@ -72,6 +74,11 @@ func (s *Store) Get(key string) ([]byte, bool) {
 }
 
 func (s *Store) Set(key string, value []byte) {
+	err := s.wal.Append(OpSet, []byte(key), value)
+
+	if err != nil {
+		println("something went wrong here...")
+	}
 	shardId := hash(key) & uint64(len(s.shards)-1)
 	shard := &s.shards[shardId]
 
@@ -83,6 +90,11 @@ func (s *Store) Set(key string, value []byte) {
 }
 
 func (s *Store) Delete(key string) {
+	err := s.wal.Append(OpSet, []byte(key), []byte(""))
+
+	if err != nil {
+		println("something went wrong here...")
+	}
 	shardId := hash(key) & uint64(len(s.shards)-1)
 	shard := &s.shards[shardId]
 

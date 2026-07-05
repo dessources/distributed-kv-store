@@ -2,11 +2,11 @@ GET http://localhost:8000/ HTTP/1.
 
 ###
 
-GET http://localhost:8000/akey HTTP/1.1
+GET http://localhost:8000/specialkey HTTP/1.1
 
 ###
 
-POST http://localhost:8000/akey HTTP/1.1
+POST http://localhost:8000/twokey HTTP/1.1
 Content-Type: "text/plain"
 
 "{
@@ -14,24 +14,31 @@ Content-Type: "text/plain"
     "val": "this second val"
 }"
 
-###
-POST http://localhost:8000/ HTTP/1.1
-Content-Type: "application/json"
 
-{
-    "key": "twokey",
-    "val": "this second val"
-}
 
 ###
-POST http://localhost:8000/ HTTP/1.1
-Content-Type: "application/json"
+POST http://localhost:8000/specialkey HTTP/1.1
+Content-Type: "text/plain"
 
-{
+"the value of the special key."
+
+###
+POST http://localhost:8000/anotherkey HTTP/1.1
+Content-Type: "text/plain"
+
+"{
     "key": "mykey",
     "val": "myval val"
-}
+}"
 ###
-DELETE http://localhost:8000/twokey HTTP/1.1
+POST http://localhost:8000/badkey HTTP/1.1
+Content-Type: "text/plain"
+
+"{
+    "key": "mykey",
+    "val": "myval val"
+}""
+###
+DELETE http://localhost:8000/badkey HTTP/1.1
 Content-Type: "application/json"
 
