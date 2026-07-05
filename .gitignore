@@ -54,6 +54,7 @@ TestResult.xml
 nunit-*.xml
 
 #LLMS
+.agents
 Gemini.md
 Claude.md
 Gemini-tactician.md
