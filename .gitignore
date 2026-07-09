@@ -52,3 +52,14 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+#LLMS
+.agents
+Gemini.md
+Claude.md
+Gemini-tactician.md
+PROMPTS.md
+
+
+#log files
+*.wal
