@@ -1,8 +1,8 @@
-GET http://localhost:8001/ HTTP/1.
+GET http://localhost:8001/ 
 
 ###
 
-GET http://localhost:8000/specialkey HTTP/1.1
+GET http://localhost:8002/name HTTP/1.1
 
 ###
 
@@ -17,10 +17,10 @@ Content-Type: "text/plain"
 
 
 ###
-POST http://localhost:8000/specialkey HTTP/1.1
+POST http://localhost:8000/name HTTP/1.1
 Content-Type: "text/plain"
 
-"the value of the special key."
+"Jaem Dessources"
 
 ###
 POST http://localhost:8000/anotherkey HTTP/1.1
