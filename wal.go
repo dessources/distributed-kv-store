@@ -40,8 +40,8 @@ func NewWal(path string) (*WAL, error) {
 }
 
 func (w *WAL) StartBackgroundWorker() {
-	request_buf := make([]WalRequest, BufferSize)
-	data_buf := make([]byte, BufferSize)
+	request_buf := make([]WalRequest, 0, BufferSize)
+	data_buf := make([]byte, 0, BufferSize)
 
 	for {
 		req, ok := <-w.ch

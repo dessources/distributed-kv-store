@@ -1,7 +1,9 @@
 package main
 
+import "net/http"
+
 func main() {
-	wal, err := NewWal("/home/pianodessources/Projects/distributed-kv-store/leader.wal")
+	wal, err := NewWal("./leader.wal")
 	if err != nil {
 		println("Could not initialize write ahead log")
 		println(err.Error())
@@ -14,7 +16,7 @@ func main() {
 	}
 
 	server := NewServer(store)
-
-	server.ListenAndServe()
+	println("Server Listening...")
+	http.ListenAndServe(":8000", server.Handler)
 
 }

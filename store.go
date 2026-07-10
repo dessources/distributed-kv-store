@@ -62,7 +62,7 @@ func (s *Store) Get(key string) ([]byte, bool) {
 	shardId := s.getShardId(key)
 	shard := &s.shards[shardId]
 
-	shard.m.RUnlock()
+	shard.m.RLock()
 
 	val, ok := shard.data[key]
 
@@ -73,6 +73,7 @@ func (s *Store) Get(key string) ([]byte, bool) {
 }
 
 func (s *Store) Set(key string, val []byte) {
+	s.wal.Append(OpSet, []byte(key), val)
 	shard := &s.shards[s.getShardId(key)]
 
 	shard.m.Lock()
@@ -82,7 +83,9 @@ func (s *Store) Set(key string, val []byte) {
 	shard.m.Unlock()
 
 }
+
 func (s *Store) Delete(key string) {
+	s.wal.Append(OpDelete, []byte(key), []byte{})
 	shard := &s.shards[s.getShardId(key)]
 
 	shard.m.Lock()
