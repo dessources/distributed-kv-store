@@ -37,12 +37,16 @@ func NewWal(path string) (*WAL, error) {
 	}
 	w := &WAL{f: f, ch: buf}
 
+	w.wg.Add(1)
 	go w.StartWalWorker()
 
 	return w, nil
 }
 
 func (w *WAL) StartWalWorker() {
+	defer w.wg.Done()
+	defer w.f.Close()
+
 	var batch []walRequest
 	var buf []byte
 
@@ -110,6 +114,11 @@ func (w *WAL) Append(op byte, key, val []byte) error {
 	w.ch <- req
 
 	return <-req.errc
+}
+
+func (w *WAL) Stop() {
+	close(w.ch)
+	w.wg.Wait()
 }
 
 func (w *WAL) Recover(s *Store) error {

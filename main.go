@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -41,7 +46,25 @@ func main() {
 	server.Addr = *port
 	
 	println("HTTP Server listening on", *port)
-	if err := http.ListenAndServe(*port, server.Handler); err != nil {
-		panic(err)
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	println("\nShutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		println("HTTP server shutdown error:", err.Error())
 	}
+
+	println("Shutting down WAL...")
+	wal.Stop()
+	println("Shutdown complete.")
 }
